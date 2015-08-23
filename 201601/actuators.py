@@ -8,17 +8,10 @@ class Actuator:
 
 	def _writeline(self,filename,outstring):
 		with open(filename,"w") as f:
-			return self.__writeline_lock(f,outstring)
-
-	def __writeline_lock(self,f,outstring):
-		while True:
-			try:
-				fcntl.flock(f,fcntl.LOCK_EX | fcntl.LOCK_NB)
-				print >> f, outstring
-				fcntl.flock(f,fcntl.LOCK_UN)
-				return
-			except: 
-				time.sleep(0.001)
+			fcntl.flock(f,fcntl.LOCK_EX)
+			f.write(outstring)
+			fcntl.flock(f,fcntl.LOCK_UN)
+			return
 
 class StepMotorPair(Actuator):
 	def __init__(self):

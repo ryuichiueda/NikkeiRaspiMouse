@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # vim:fileencoding=utf-8
-import time, fcntl, glob, sys
+import time, fcntl, glob, sys, threading
 
 class Sensor:
 	def __init__(self):
@@ -8,17 +8,10 @@ class Sensor:
 
 	def _readline(self,filename):
 		with open(filename,"r") as f:
-			return self.__readline_lock(f)
-
-	def __readline_lock(self,f):
-		while True:
-			try:
-				fcntl.flock(f,fcntl.LOCK_EX | fcntl.LOCK_NB)
-				line = f.readline()
-				fcntl.flock(f,fcntl.LOCK_UN)
-				return line.rstrip()
-			except: 
-				time.sleep(0.001)
+			fcntl.flock(f,fcntl.LOCK_EX)
+			line = f.readline()
+			fcntl.flock(f,fcntl.LOCK_UN)
+			return line.rstrip()
 			
 class Buttons(Sensor):
 	def __init__(self):
@@ -59,10 +52,20 @@ class Buttons(Sensor):
 	def get_pushed(self):	return self.__pushed
 
 if __name__ == '__main__':
-	btns = Buttons()
-	while True:
-		btns.update()
-		print btns.get_values()
-		print btns.get_pushed()
+	num = 100
+	btns = []
+	for i in range(num):
+		btns.append(Buttons())
 
-		time.sleep(1)
+	th = []
+	for i in range(num):
+		th.append(threading.Thread(target=btns[i].update))
+
+	for i in range(num):
+		th[i].start()
+
+	for i in range(num):
+		th[i].join()
+	
+		print btns[i].get_values()
+		print btns[i].get_pushed()
