@@ -40,7 +40,7 @@ class StepMotorPair(Actuator):
 		self.output(l_hz,r_hz,tm)
 
 	def turn(self,deg):
-		r_hz, l_hz = -400, 400
+		l_hz, r_hz = -400, 400
 		tm = int(1000.0*deg/180)
 		if tm < 0:
 			r_hz, l_hz, tm = -r_hz, -l_hz, -tm
