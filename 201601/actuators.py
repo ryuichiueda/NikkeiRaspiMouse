@@ -8,14 +8,17 @@ class Actuator:
 
 	def _writeline(self,filename,outstring):
 		with open(filename,"w") as f:
-			while True:
-				try:
-					fcntl.flock(f,fcntl.LOCK_EX | fcntl.LOCK_NB)
-					print >> f, outstring
-					fcntl.flock(f,fcntl.LOCK_UN)
-					return
-				except: 
-					time.sleep(0.001)
+			return self.__writeline_lock(f,outstring)
+
+	def __writeline_lock(self,f,outstring):
+		while True:
+			try:
+				fcntl.flock(f,fcntl.LOCK_EX | fcntl.LOCK_NB)
+				print >> f, outstring
+				fcntl.flock(f,fcntl.LOCK_UN)
+				return
+			except: 
+				time.sleep(0.001)
 
 class StepMotorPair(Actuator):
 	def __init__(self):
@@ -48,6 +51,7 @@ class StepMotorPair(Actuator):
 class Leds(Actuator):
 	def __init__(self):
 		Actuator.__init__(self)
+		self.change_all(0,0,0,0)
 
 	def change_all(self,leftside,leftfront,rightfront,rightside):
 		self._writeline("/dev/rtled0",str(rightside))
@@ -59,6 +63,7 @@ class Leds(Actuator):
 class Buzzer(Actuator):
 	def __init__(self):
 		Actuator.__init__(self)
+		self.off()
 
 	def on(self,hz): self._writeline("/dev/rtbuzzer0",str(hz))
 	def off(self):   self._writeline("/dev/rtbuzzer0","0")
