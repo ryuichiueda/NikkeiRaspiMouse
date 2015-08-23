@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# vim:fileencoding=utf-8
 import sys, time, threading
 from sensors import Buttons
 from actuators import StepMotorPair, Leds, Buzzer
@@ -26,11 +28,15 @@ class Agent:
 			elif self.state == "run_ok":
 				self.one_step()
 				continue
+			elif self.state == "off":
+				self.__init()
+				sys.exit(0)
 
 			time.sleep(0.1)
 	
 	def __init(self):
 		self.leds.change_all(1,1,1,0)
+		self.buzzer.off()
 		self.motors.off()
 		self.init()
 
@@ -42,8 +48,12 @@ class Agent:
 	def __reset_check(self):
 		while True:
 			self.buttons.update()
-			if self.buttons.front_pushed():
+			if self.buttons.all_pushed_now():
+				self.state = "off"
+				return
+			elif self.buttons.front_pushed():
 				self.__state_transition()
+
 			time.sleep(0.1)
 
 	def __state_transition(self):

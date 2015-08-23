@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*- 
+# vim:fileencoding=utf-8
 import sys, time, fcntl
 
 class Actuator:
