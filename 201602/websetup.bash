@@ -1,9 +1,16 @@
 #!/bin/bash
 
-sudo apt-get install apache2
 
+#スティッキービットの解除
+sudo chmod o-t /run/shm/
+
+#スクリプトを実行可能に
 chmod +x -R ./web/ 
+
+#ウェブアプリをコピー。パーミッションも変わる
 sudo rsync -av ./web/ /var/www/
+
+#apacheの設定と再起動
 sudo cp ./raspimouse.apache2.conf /etc/apache2/sites-available/
 sudo rm -f /etc/apache2/sites-enabled/*default*
 sudo ln -s /etc/apache2/sites-available/raspimouse.apache2.conf /etc/apache2/sites-enabled/raspimouse.conf
