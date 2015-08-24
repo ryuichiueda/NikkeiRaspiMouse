@@ -76,3 +76,8 @@ class AgentHello(Agent):
 			self.motors.turn(-90)
 
 		print "Hello world"
+
+
+if __name__ == '__main__':
+	agent = AgentHello()
+	agent.do_action()
