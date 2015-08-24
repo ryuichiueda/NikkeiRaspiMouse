@@ -26,7 +26,7 @@ class Agent:
 				self.buzzer.off()
 				self.state = "run_ok"
 			elif self.state == "run_ok":
-				self.one_step()
+				self.loop()
 				continue
 			elif self.state == "off":
 				self.__init()
@@ -38,7 +38,7 @@ class Agent:
 		self.leds.change_all(1,1,1,0)
 		self.buzzer.off()
 		self.motors.off()
-		self.init()
+		self.setup()
 
 	def __ready(self):
 		self.leds.change_all(1,1,1,1)
@@ -65,10 +65,10 @@ class AgentHello(Agent):
 	def __init__(self):
 		Agent.__init__(self)
 
-	def init(self):
-		pass
+	def setup(self):
+		print >> sys.stderr, "setup"
 
-	def one_step(self):
+	def loop(self):
 		self.buttons.update()
 		if self.buttons.center_pushed():
 			self.motors.turn(90)
