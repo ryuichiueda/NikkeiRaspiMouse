@@ -4,14 +4,22 @@ import time, fcntl, glob, sys, threading
 
 class Sensor:
 	def __init__(self):
-		pass
+		with open("/tmp/lock","w") as lock:
+			lock.write("")
 
 	def _readline(self,filename):
-		with open(filename,"r") as f:
-			fcntl.flock(f,fcntl.LOCK_EX)
-			line = f.readline()
-			fcntl.flock(f,fcntl.LOCK_UN)
+		with open("/tmp/lock","r") as lock:
+			fcntl.flock(lock,fcntl.LOCK_EX)
+			with open(filename,"r") as f:
+				line = f.readline()
+			fcntl.flock(lock,fcntl.LOCK_UN)
+
 			return line.rstrip()
+#		with open(filename,"r") as f:
+#			fcntl.flock(f,fcntl.LOCK_EX)
+#			line = f.readline()
+#			fcntl.flock(f,fcntl.LOCK_UN)
+#			return line.rstrip()
 			
 class Buttons(Sensor):
 	def __init__(self):
