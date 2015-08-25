@@ -7,10 +7,10 @@ from actuators import StepMotorPair, Leds, Buzzer
 class Agent:
 	def __init__(self):
 		self.state = "init"
-		self.motors = StepMotorPair()
-		self.buttons = Buttons()
-		self.buzzer = Buzzer()
-		self.leds = Leds()
+		self.motors = StepMotorPair("/tmp/motors")
+		self.buttons = Buttons("/tmp/button")
+		self.buzzer = Buzzer("/tmp/buzzer")
+		self.leds = Leds("/tmp/leds")
 		threading.Thread(target=self.__reset_check).start()
 
 	def do_action(self):

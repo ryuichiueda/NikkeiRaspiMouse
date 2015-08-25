@@ -3,19 +3,18 @@
 import sys, time, fcntl
 
 class Actuator:
-	def __init__(self):
-		pass
+	def __init__(self,lockfile):
+		self.lockfile = lockfile
 
 	def _writeline(self,filename,outstring):
-		with open(filename,"w") as f:
-			fcntl.flock(f,fcntl.LOCK_EX)
-			f.write(outstring)
-			fcntl.flock(f,fcntl.LOCK_UN)
-			return
+		with open(self.lockfile,"w") as lock:
+			fcntl.flock(lock,fcntl.LOCK_EX)
+			with open(filename,"w") as f:
+				f.write(outstring)
 
 class StepMotorPair(Actuator):
-	def __init__(self):
-		Actuator.__init__(self)
+	def __init__(self,lockfile):
+		Actuator.__init__(self,lockfile)
 		self.off()
 
 	def output(self,l_hz,r_hz,msec):
@@ -42,8 +41,8 @@ class StepMotorPair(Actuator):
 
 
 class Leds(Actuator):
-	def __init__(self):
-		Actuator.__init__(self)
+	def __init__(self,lockfile):
+		Actuator.__init__(self,lockfile)
 		self.change_all(0,0,0,0)
 
 	def change_all(self,leftside,leftfront,rightfront,rightside):
@@ -54,8 +53,8 @@ class Leds(Actuator):
 
 
 class Buzzer(Actuator):
-	def __init__(self):
-		Actuator.__init__(self)
+	def __init__(self,lockfile):
+		Actuator.__init__(self,lockfile)
 		self.off()
 
 	def on(self,hz): self._writeline("/dev/rtbuzzer0",str(hz))

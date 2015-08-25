@@ -3,27 +3,20 @@
 import time, fcntl, glob, sys, threading
 
 class Sensor:
-	def __init__(self):
-		with open("/tmp/lock","w") as lock:
-			lock.write("")
+	def __init__(self,lockfile):
+		self.lockfile = lockfile
 
 	def _readline(self,filename):
-		with open("/tmp/lock","r") as lock:
+		with open(self.lockfile,"w") as lock:
 			fcntl.flock(lock,fcntl.LOCK_EX)
 			with open(filename,"r") as f:
 				line = f.readline()
-			fcntl.flock(lock,fcntl.LOCK_UN)
 
-			return line.rstrip()
-#		with open(filename,"r") as f:
-#			fcntl.flock(f,fcntl.LOCK_EX)
-#			line = f.readline()
-#			fcntl.flock(f,fcntl.LOCK_UN)
-#			return line.rstrip()
+		return line.rstrip()
 			
 class Buttons(Sensor):
-	def __init__(self):
-		Sensor.__init__(self)
+	def __init__(self,lockfile):
+		Sensor.__init__(self,lockfile)
 		self.__files = sorted(glob.glob("/dev/rtswitch[0-2]"))
 		self.__pushed = [False,False,False]
 		self.__values = ["1","1","1"]
@@ -59,21 +52,15 @@ class Buttons(Sensor):
 	def get_values(self):	return self.__values
 	def get_pushed(self):	return self.__pushed
 
+def f(b,a):
+	while True:
+		b.update()
+		print a,b.get_values()
+		
+
+
 if __name__ == '__main__':
-	num = 100
-	btns = []
-	for i in range(num):
-		btns.append(Buttons())
-
-	th = []
-	for i in range(num):
-		th.append(threading.Thread(target=btns[i].update))
-
-	for i in range(num):
-		th[i].start()
-
-	for i in range(num):
-		th[i].join()
-	
-		print btns[i].get_values()
-		print btns[i].get_pushed()
+	btn = Buttons('/tmp/button.lock')
+	threading.Thread(target=f,args=(btn,"b")).start()
+	threading.Thread(target=f,args=(btn,"a")).start()
+	print "aho"
