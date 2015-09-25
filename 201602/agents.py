@@ -58,7 +58,7 @@ class Agent:
 			time.sleep(0.1)
 
 	def __state_transition(self):
-		if self.state == "init_ok":    self.state = "ready"
+		if self.state == "init_ok":	self.state = "ready"
 		elif self.state == "ready_ok": self.state = "run"
 		elif self.state == "run_ok":   self.state = "init"
 
@@ -91,26 +91,15 @@ class AgentFileListener(Agent):
 		try:	os.remove(self.opfile)
 		except:	pass
 
-	def readOp(self):
+	def loop(self):
 		try:
 			with open(self.opfile,"r") as f:
 				op = f.readline().rstrip()
 
-			try:
-				os.remove(self.opfile)
-			except:
-				print >> sys.stderr, "Can't remove op file"
-				sys.exit(1)
-
-			return op
+			os.remove(self.opfile)
 		except:
-			return ""
-
-	def loop(self):
-		op = self.readOp()
-		if op == "" : return
-
-		print op
+			time.sleep(0.01)
+			return;
 
 		if op == "left":	self.motors.turn(10)
 		elif op == "right":	self.motors.turn(-10)
