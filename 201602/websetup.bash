@@ -1,9 +1,6 @@
 #!/bin/bash -xv
 #このファイルのあるディレクトリで実行のこと（手抜き）
 
-#スティッキービットの解除
-sudo chmod o-t /run/shm/
-
 #スクリプトを実行可能に
 chmod +x -R ./web/ 
 

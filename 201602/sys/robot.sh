@@ -8,3 +8,6 @@ chmod 666 /dev/rt*
 
 ### motor power off ###
 echo 0 > /dev/rtmotoren0
+
+###スティッキービットの解除###
+sudo chmod o-t /run/shm/

@@ -91,15 +91,26 @@ class AgentFileListener(Agent):
 		try:	os.remove(self.opfile)
 		except:	pass
 
-	def loop(self):
+	def readOp(self):
 		try:
 			with open(self.opfile,"r") as f:
 				op = f.readline().rstrip()
 
-			os.remove(self.opfile)
+			try:
+				os.remove(self.opfile)
+			except:
+				print >> sys.stderr, "Can't remove op file"
+				sys.exit(1)
+
+			return op
 		except:
-			time.sleep(0.01)
-			return;
+			return ""
+
+	def loop(self):
+		op = self.readOp()
+		if op == "" : return
+
+		print op
 
 		if op == "left":	self.motors.turn(10)
 		elif op == "right":	self.motors.turn(-10)
