@@ -13,9 +13,7 @@ cd ./linux
 KERNEL=kernel7
 
 make bcm2709_defconfig
-
 make -j4 zImage modules dtbs
-
 make modules_install
 
 cp arch/arm/boot/dts/*.dtb /boot/

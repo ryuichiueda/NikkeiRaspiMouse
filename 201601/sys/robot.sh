@@ -2,7 +2,8 @@
 exec 2> /run/shm/init.log
 
 ### set the driver ###
-insmod /home/pi/RaspberryPiMouse/src/drivers/rtmouse.ko
+cd /home/pi/RaspberryPiMouse/src/drivers/
+make install
 sleep 1
 chmod 666 /dev/rt*
 

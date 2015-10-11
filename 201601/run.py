@@ -1,5 +1,7 @@
 #!/usr/bin/python
-from sensors import SensorButtons
+import threading
+from agents import AgentHello 
 
-btns = SensorButtons()
-btns.update()
+if __name__ == '__main__':
+	agent = AgentHello()
+	agent.run()
