@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from sensors import SensorButtons
 
-log = open("/run/shm/run.log","w")
-print >> log, "pppp"
+btns = SensorButtons()
+btns.update()
