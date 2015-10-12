@@ -20,25 +20,20 @@ class SensorButtons(Sensor):
 	def __init__(self):
 		Sensor.__init__(self)
 		self.files = sorted(glob.glob("/dev/rtswitch[0-2]"))
-		self.on_time = [None,None,None]
+		self.pushed = [None,None,None]
 		self.values = ["1","1","1"]
 
 	def _update(self):
 		tm = time.time()
 		self.values = map(self._readline,self.files)
-		self.on_time = [ tm if v == "0" else past for (v,past) in zip(self.values,self.on_time)]
+		self.pushed = [ v == "0" or past for (v,past) in zip(self.values,self.pushed)]
 
 	def _pushed(self,num):
 		if self.on_time[num] == None:
 			return False
 
-		THRESHOLD = 0.2
-		tm = time.time()
-		if tm - self.on_time[num] > THRESHOLD:
-			self.on_time[num] = None
-			return False
-		else:
-			return True
+		self.on_time[num] = None
+		return True
 
 	def front_pushed(self):    self._pushed(0)
 	def center_pushed(self):   self._pushed(1)

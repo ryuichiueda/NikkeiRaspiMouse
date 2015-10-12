@@ -3,28 +3,36 @@ from sensors import SensorButtons
 
 class Agent:
 	def __init__(self):
-		self.run_thread = threading.Thread(target=self._run)
+		self.thread_reset_check = threading.Thread(target=self.__reset_check)
+		self.run = False
+		self.pushed = False
 
-	def run(self):
-		try:
-			self.run_thread.start()
-			__watch_reset()
-		except:
-			sys.exit(1)
+	def do_action(self):
+		while True:
+			if self.pushed:
+				self.run = not self.run
+				self.pushed = False
+				self.thread_reset_check.start()
 
-	def __watch_reset(self):
-		btns = SensorButtons()
+			if self.run:
+				self._one_step()
+			else:
+				time.sleep(1)
+				
+
+	def __reset_check(self):
 		while True:
 			btns.update()
 			if btns.front_pushed():
-				raise NameError('reset')
+				self.pushed = True
+				return
 
-			time.sleep(0.1)
+			sleep(0.1)
+
 
 class AgentHello(Agent):
 	def __init__(self):
 		Agent.__init__(self)
 
-	def _run(self):
+	def _one_step(self):
 		print "Hello world"
-		time.sleep(5.0)
