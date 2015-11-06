@@ -1,7 +1,4 @@
-#!/bin/bash -exv
-#references
-#	Nikkei Linux Dec. 2014
-#	https://www.raspberrypi.org/documentation/linux/kernel/building.md
+#!/bin/bash -vxe
 
 #The MIT License (MIT)
 #
@@ -25,20 +22,9 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-apt-get install bc
-cd /usr/src
-
-git clone https://github.com/raspberrypi/linux || ( cd ./linux && git pull )
-
-cd ./linux
-
-KERNEL=kernel7
-
-make bcm2709_defconfig
-make -j4 zImage modules dtbs
-make modules_install
-
-cp arch/arm/boot/dts/*.dtb /boot/
-cp arch/arm/boot/dts/overlays/*.dtb* /boot/overlays/
-cp arch/arm/boot/dts/overlays/README /boot/overlays/
-scripts/mkknlimg arch/arm/boot/zImage /boot/$KERNEL.img
+sudo apt-get install python-dev python-setuptools
+git clone https://github.com/Gadgetoid/WiringPi2-Python.git
+cd WiringPi2-Python/
+sudo python setup.py install
+cd WiringPi/
+./build 
