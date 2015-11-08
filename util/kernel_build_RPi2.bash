@@ -3,6 +3,7 @@
 #	Nikkei Linux Dec. 2014
 #	https://www.raspberrypi.org/documentation/linux/kernel/building.md
 
+apt-get update
 apt-get install bc
 cd /usr/src
 
