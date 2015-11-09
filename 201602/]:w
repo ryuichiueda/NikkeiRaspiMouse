@@ -3,7 +3,7 @@
 
 import cgi
 
-print "Content-type: text/html\n"
+print "Content-type: text/html\n\n"
 
 form = cgi.FieldStorage()
 if not form.has_key("op"):
@@ -18,5 +18,3 @@ try:
 		rename(filename + ".tmp",filename)
 except:
 	print "FILE ERROR"
-
-sys.exit(0)
