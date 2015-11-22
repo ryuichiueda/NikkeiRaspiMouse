@@ -59,7 +59,7 @@ class PiCamera(Sensor):
 		self.camera.hflip = True
 		self.camera.vflip = True
 
-	def capture(self,filename,resolution=(2592,1944)):
+	def capture(self,filename,resolution=(2592/4,1944/4)):
                 self.camera.resolution = resolution
 		self.camera.capture(filename + "_tmp.jpg")
 		os.rename(filename + "_tmp.jpg",filename)
@@ -80,8 +80,8 @@ class PiCamera(Sensor):
                 #出力
                 if len(face) == 0: return None, None
                 r = face[0]
-                cv2.rectangle(img,tuple(r[0:2]),tuple(r[0:2]+r[2:4]),(0,255,255),4)
-                cv2.imwrite("/var/www/image.jpg",img)
+                #cv2.rectangle(img,tuple(r[0:2]),tuple(r[0:2]+r[2:4]),(0,255,255),4)
+                #cv2.imwrite("/var/www/image.jpg",img)
                 return r[0] + r[2]/2 - width/2, r[1] + r[3]/2 - height/2
 
 if __name__ == '__main__':
