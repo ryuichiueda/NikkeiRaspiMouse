@@ -51,7 +51,9 @@ class Buttons(Sensor):
 	def get_values(self):	return self.__values
 	def get_pushed(self):	return self.__pushed
 
-import picamera,os,cv2,shutil
+# 参考: http://blog.livedoor.jp/tmako123-programming/archives/41536599.html
+import picamera,os,cv2,io
+import numpy as np
 class PiCamera(Sensor):
 	def __init__(self):
 		Sensor.__init__(self)
@@ -66,23 +68,28 @@ class PiCamera(Sensor):
 
 	def face_pos_on_img(self):
                 #カメラの操作
-		f = "/run/shm/face_pos_on_img.jpg"
-                width,height = 800,600
-		self.capture(f,(width,height))
+                width,height = 600,400
+                stream = io.BytesIO()
+                self.camera.capture(stream,format='jpeg')
+                data = np.fromstring(stream.getvalue(), dtype=np.uint8)
+                img = cv2.imdecode(data,1)
 
                 #OpenCVを使った顔認識
-                img = cv2.imread(f)
+                #img = cv2.imread(f)
                 gimg = cv2.cvtColor(img,cv2.cv.CV_BGR2GRAY)
                 classifier = "/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml"
                 cascade = cv2.CascadeClassifier(classifier)
                 face = cascade.detectMultiScale(gimg,1.1,1,cv2.CASCADE_FIND_BIGGEST_OBJECT)
 
                 #出力
-                if len(face) == 0: return None, None
+                if len(face) == 0: return None
                 r = face[0]
-                #cv2.rectangle(img,tuple(r[0:2]),tuple(r[0:2]+r[2:4]),(0,255,255),4)
-                #cv2.imwrite("/var/www/image.jpg",img)
-                return r[0] + r[2]/2 - width/2, r[1] + r[3]/2 - height/2
+                cv2.rectangle(img,tuple(r[0:2]),tuple(r[0:2]+r[2:4]),(0,255,255),4)
+                cv2.imwrite("/var/www/tmp.image.jpg",img)
+                os.rename("/var/www/tmp.image.jpg","/var/www/image.jpg")
+                h = r[0] + r[2]/2 - width/2
+                #画角が54度: 800/54 = 14.81ピクセルで1度
+                return -h/14.81
 
 if __name__ == '__main__':
 	pass
