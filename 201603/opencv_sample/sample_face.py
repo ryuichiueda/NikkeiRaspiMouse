@@ -6,7 +6,7 @@
 import cv2, sys
 
 #画像を読み込む
-img = cv2.imread("/home/pi/fool.jpg")
+img = cv2.imread("/home/pi/face.jpg")
 #処理用に変換
 gimg = cv2.cvtColor(img,cv2.cv.CV_BGR2GRAY)
 
