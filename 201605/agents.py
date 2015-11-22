@@ -180,21 +180,22 @@ class AgentGoAlongWall(Agent):
 
     def loop(self):
         self.hz += 20
-        if self.hz > 2000:
-            self.hz = 2000
+        if self.hz > 2500:
+            self.hz = 2500
 
         self.lightsensors.update()
         values = self.lightsensors.get_values()
-        leftside = values[1]
-        rightside = values[2]
-        front_sum = values[0] + values[3]
+        [leftfront,leftside,rightside,rightfront] = values
 
-        if front_sum > 100:
+        if leftfront + rightfront > 100:
             self.hz = 0
             self.motors.set_values(0,0)
             time.sleep(0.5)
-            self.motors.set_values(300,-300)
-            time.sleep(1.0)
+            if leftfront + leftside > rightfront + rightside:
+                self.motors.set_values(300,-300)
+            else:
+                self.motors.set_values(-300,300)
+            time.sleep(0.5)
             return
 
         if leftside < 50 and rightside < 50:
@@ -202,12 +203,6 @@ class AgentGoAlongWall(Agent):
             time.sleep(0.02)
             return
 
-        #if leftside < 10:
-         #   self.hz = 0
-         #   self.motors.set_values(400,600)
-         #   time.sleep(1.0)
-         #   return
-            
         #1cm近づくとだいたい50値が増える
         error = (leftside - rightside)/50.0
         #1cmあたり3度/秒変化をつける
