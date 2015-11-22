@@ -145,7 +145,7 @@ class AgentGoStraight(Agent):
         diff = 20*direction / 9 * p_gain
         self.motors.set_values(diff, - diff)
 
-        time.sleep(0.1)
+        time.sleep(0.02)
         
 if __name__ == '__main__':
     agent = AgentGoStraight()
