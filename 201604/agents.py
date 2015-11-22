@@ -48,8 +48,8 @@ class Agent:
         self.motors.on()
         self.ready()
 
-    #def ready(self):
-    #    pass
+    def ready(self):
+        pass
 
     def __reset_check(self):
         while True:
