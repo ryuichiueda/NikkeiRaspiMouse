@@ -32,7 +32,7 @@ class StepMotorRawControl(StepMotor):
 	    self._writeline("/dev/rtmotoren0","0")
 
         def threshold(self,freq):
-            th = 2000
+            th = 4000
             if freq > th:       return th
             elif freq < -th:    return -th
             else:               return freq

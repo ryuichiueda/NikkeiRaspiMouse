@@ -46,6 +46,7 @@ class Agent:
         self.leds.change_all(1,1,1,1)
         self.buzzer.on(4000)
         self.motors.on()
+        self.ready()
 
     def __reset_check(self):
         while True:
@@ -122,20 +123,34 @@ class AgentGoStraight(Agent):
         Agent.__init__(self)
         self.yaw = Yaw()
         self.motors = StepMotorRawControl()
+        self.hz = 0
+        self.diff = 0
 
     def setup(self):
         print >> sys.stderr, "setup"
+
+    def ready(self):
         self.yaw.adjust()
+        self.hz = 0
+        self.diff = 0
 
     def loop(self):
         self.yaw.update()
         v,t = self.yaw.get_value(),self.yaw.get_time()
         print v
 
-        d = 20*v / 9
-        self.motors.accel(d,-d)
-        time.sleep(1.0)
-        self.motors.accel(-d,d)
+        self.hz += 40
+        if self.hz > 3500: self.hz = 3500
+
+        p_gain = 10.0
+        self.diff = 20*v / 9 * p_gain
+
+        if self.hz < 500:
+            self.motors.output(500,500)
+        else:
+            self.motors.output(self.hz + self.diff, self.hz - self.diff)
+
+        #time.sleep(0.2)
         
 if __name__ == '__main__':
     agent = AgentGoStraight()
