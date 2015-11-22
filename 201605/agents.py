@@ -15,7 +15,7 @@ class Agent:
         self.leds = Leds()
         #self.camera = PiCamera()
         threading.Thread(target=self.__reset_check).start()
-        threading.Thread(target=self.__lightsensor_check).start()
+       # threading.Thread(target=self.__lightsensor_check).start()
 
     def do_action(self):
         while True:
@@ -53,13 +53,13 @@ class Agent:
     def ready(self):
         pass
 
-    def __lightsensor_check(self):
-        while True:
-            self.lightsensors.update()
-            if self.state == "off":
-                return
-
-            time.sleep(0.1)
+#    def __lightsensor_check(self):
+#        while True:
+#            self.lightsensors.update()
+#            if self.state == "off":
+#                return
+#
+#            time.sleep(0.02)
 
     def __reset_check(self):
         while True:
@@ -179,18 +179,20 @@ class AgentGoAlongWall(Agent):
         self.hz = 0
 
     def loop(self):
-        self.hz += 10
+        self.hz += 20
         if self.hz > 2000:
             self.hz = 2000
 
-        #self.lightsensors.update()
+        self.lightsensors.update()
         values = self.lightsensors.get_values()
         leftside = values[1]
         rightside = values[2]
         front_sum = values[0] + values[3]
 
-        if front_sum > 300:
+        if front_sum > 100:
             self.hz = 0
+            self.motors.set_values(0,0)
+            time.sleep(0.5)
             self.motors.set_values(300,-300)
             time.sleep(1.0)
             return
@@ -200,24 +202,21 @@ class AgentGoAlongWall(Agent):
             time.sleep(0.02)
             return
 
-        if leftside < 10:
-            self.hz = 0
-            self.motors.set_values(400,600)
-            time.sleep(1.0)
-            return
+        #if leftside < 10:
+         #   self.hz = 0
+         #   self.motors.set_values(400,600)
+         #   time.sleep(1.0)
+         #   return
             
-        #目標の値
-        target = 200
         #1cm近づくとだいたい50値が増える
-        error = (target - leftside)/50.0
+        error = (leftside - rightside)/50.0
         #1cmあたり3度/秒変化をつける
         direction = error * 3
-        diff = - 20*direction / 9
-        print diff
+        diff = 20*direction / 9
 
         self.motors.set_values(self.hz + diff, self.hz - diff)
-
         time.sleep(0.02)
+
         
 if __name__ == '__main__':
     agent = AgentGoAlongWall()
