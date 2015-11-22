@@ -9,29 +9,56 @@ class Sensor:
 	def __init__(self):
 		pass
 
-	def _readline(self,filename):
+	def _readline(self,f):
+            if isinstance(f,basestring) :
+                return self._readline_filename(f)
+            else:
+                return self._readline_fileobj(f)
+
+	def _readline_filename(self,filename):
 		with open(filename,"r") as f:
 			fcntl.flock(f,fcntl.LOCK_EX)
 			line = f.readline()
 			fcntl.flock(f,fcntl.LOCK_UN)
 			return line.rstrip()
 
+	def _readline_fileobj(self,f):
+		fcntl.flock(f,fcntl.LOCK_EX)
+		line = f.readline()
+		fcntl.flock(f,fcntl.LOCK_UN)
+		return line.rstrip()
+
+
 class Yaw(Sensor):
 	def __init__(self):
 		Sensor.__init__(self)
-                self.__files = "/dev/ttyACM0"
-		self.__time = time.time()
-                self.__init_value = float(self._readline(self.__files))
-		self.__value = self.__init_value
+                self.__value = 0.0
+                self.__init_value = 0.0
+                self.__time = 0.0
 
-	def adjust(self):
-                self.__init_value = float(self._readline(self.__files))
+        def on(self):
+		self.__run = True
+                threading.Thread(target=self.__update).start()
 
-	def update(self):
-		self.__value = float(self._readline(self.__files))
-		self.__time = time.time()
+        def off(self):
+		self.__run = False
 
-	def get_value(self): return self.__value - self.__init_value
+	def __update(self):
+                with open("/dev/ttyACM0","r") as f:
+		    self.__init_value = float(self._readline(f))
+                    time.sleep(0.3)
+		    self.__init_value = float(self._readline(f))
+                    while self.__run:
+                        time.sleep(0.03)
+		        self.__value = float(self._readline(f))
+		        self.__time = time.time()
+
+	def get_value(self):
+            v = self.__value - self.__init_value
+            if v > 180.0:   v -= 360.0
+            elif v < -180.0:    v += 360.0
+            return v
+
 	def get_time(self): return self.__time
 			
 class Buttons(Sensor):
@@ -53,10 +80,11 @@ class Buttons(Sensor):
 
 	#デバイスファイルからのデータ読み込み
 	def update(self):
-		#現在の値の取得
-		self.__values = map(self._readline,self.__files)
-		#押されたら*_pushedが呼ばれるまでTrueを保持するリスト
-		self.__pushed = [ v == "0" or past for (v,past) in zip(self.__values,self.__pushed)]
+            time.sleep(0.3)
+            #現在の値の取得
+            self.__values = map(self._readline,self.__files)
+            #押されたら*_pushedが呼ばれるまでTrueを保持するリスト
+            self.__pushed = [ v == "0" or past for (v,past) in zip(self.__values,self.__pushed)]
 
 	#公開するボタンの状態取得メソッド
 	def front_pushed(self):    return self.__check_pushed(0)
@@ -114,7 +142,6 @@ class PiCamera(Sensor):
 if __name__ == '__main__':
     yaw = Yaw()
     while True:
-        yaw.update()
         v,t = yaw.get_value(),yaw.get_time()
         print v
     

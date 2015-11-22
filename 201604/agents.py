@@ -48,6 +48,9 @@ class Agent:
         self.motors.on()
         self.ready()
 
+    #def ready(self):
+    #    pass
+
     def __reset_check(self):
         while True:
             self.buttons.update()
@@ -56,8 +59,6 @@ class Agent:
                 return
             elif self.buttons.front_pushed():
                 self.__state_transition()
-
-            time.sleep(0.1)
 
     def __state_transition(self):
         if self.state == "init_ok":    self.state = "ready"
@@ -124,33 +125,35 @@ class AgentGoStraight(Agent):
         self.yaw = Yaw()
         self.motors = StepMotorRawControl()
         self.hz = 0
-        self.diff = 0
 
     def setup(self):
         print >> sys.stderr, "setup"
+        self.yaw.off()
 
     def ready(self):
-        self.yaw.adjust()
+        print >> sys.stderr, "ready"
+        self.yaw.on()
         self.hz = 0
-        self.diff = 0
 
     def loop(self):
-        self.yaw.update()
-        v,t = self.yaw.get_value(),self.yaw.get_time()
-        print v
+        direction = self.yaw.get_value()
+        #print direction
 
-        self.hz += 40
-        if self.hz > 3500: self.hz = 3500
+        if abs(direction) > 3.0:
+            self.hz = 0
+
+        self.hz += 10
+        if self.hz > 3500:
+            self.hz = 3500
 
         p_gain = 10.0
-        self.diff = 20*v / 9 * p_gain
+        diff = 20*direction / 9 * p_gain
+        if diff > 400.0:    diff = 400.0
+        elif diff < -400.0: diff = -400.0
 
-        if self.hz < 500:
-            self.motors.output(500,500)
-        else:
-            self.motors.output(self.hz + self.diff, self.hz - self.diff)
+        self.motors.output(self.hz + diff, self.hz - diff)
 
-        #time.sleep(0.2)
+        time.sleep(0.02)
         
 if __name__ == '__main__':
     agent = AgentGoStraight()
