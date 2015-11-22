@@ -139,9 +139,9 @@ class AgentGoStraight(Agent):
         print direction
 
         diff = 20*direction / 9
-        self.motors.output(diff, -diff)
+        self.motors.set_values(diff, -diff)
         time.sleep(1.0)
-        #self.motors.output(0,0)
+        #self.motors.set_values(0,0)
         
 if __name__ == '__main__':
     agent = AgentGoStraight()
