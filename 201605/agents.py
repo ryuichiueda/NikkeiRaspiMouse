@@ -165,7 +165,7 @@ class AgentGoStraight(Agent):
 
         time.sleep(0.02)
 
-class AgentGoAlongWall(Agent):
+class AgentRunRandom(Agent):
     def __init__(self):
         Agent.__init__(self)
         self.motors = StepMotorRawControl()
@@ -212,6 +212,42 @@ class AgentGoAlongWall(Agent):
         self.motors.set_values(self.hz + diff, self.hz - diff)
         time.sleep(0.02)
 
+class AgentGoAlongWall(Agent):
+    def __init__(self):
+        Agent.__init__(self)
+        self.motors = StepMotorRawControl()
+        self.hz = 0
+
+    def setup(self):
+        print >> sys.stderr, "setup"
+
+    def ready(self):
+        print >> sys.stderr, "ready"
+        self.hz = 0
+
+    def loop(self):
+        self.hz += 20
+        if self.hz > 2500:
+            self.hz = 2500
+
+        self.lightsensors.update()
+        values = self.lightsensors.get_values()
+        leftside = values[1]
+
+        if leftside < 10:
+            self.motors.set_values(self.hz, self.hz)
+            time.sleep(0.02)
+            return
+
+        target = 200
+        #1cm近づくとだいたい50値が増える
+        error = (target - leftside)/50.0
+        #1cmあたり3度/秒変化をつける
+        direction = error * 3
+        diff = -20*direction / 9
+
+        self.motors.set_values(self.hz + diff, self.hz - diff)
+        time.sleep(0.02)
         
 if __name__ == '__main__':
     agent = AgentGoAlongWall()
