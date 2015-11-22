@@ -124,7 +124,6 @@ class AgentGoStraight(Agent):
         Agent.__init__(self)
         self.yaw = Yaw()
         self.motors = StepMotorRawControl()
-        self.hz = 0
 
     def setup(self):
         print >> sys.stderr, "setup"
