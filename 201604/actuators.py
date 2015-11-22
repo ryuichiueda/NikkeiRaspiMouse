@@ -13,16 +13,42 @@ class Actuator:
 			fcntl.flock(f,fcntl.LOCK_UN)
 			return
 
-class StepMotorPair(Actuator):
+class StepMotor(Actuator):
 	def __init__(self):
 		Actuator.__init__(self)
-		self.off()
-
-	def output(self,l_hz,r_hz,msec):
-		self._writeline("/dev/rtmotor0","%d %d %d" % (l_hz,r_hz,msec))
 
 	def on(self):  self._writeline("/dev/rtmotoren0","1")
 	def off(self): self._writeline("/dev/rtmotoren0","0")
+
+class StepMotorRawControl(StepMotor):
+	def __init__(self):
+		StepMotor.__init__(self)
+                self.__l_hz = 0
+                self.__r_hz = 0
+
+	def off(self):
+            self._writeline("/dev/rtmotor_raw_r0","0")
+            self._writeline("/dev/rtmotor_raw_l0","0")
+	    self._writeline("/dev/rtmotoren0","0")
+
+        def threshold(self,freq):
+            th = 2000
+            if freq > th:       return th
+            elif freq < -th:    return -th
+            else:               return freq
+
+	def output(self,l_hz,r_hz):
+            self.__l_hz = self.threshold(l_hz)
+            self.__r_hz = self.threshold(r_hz)
+	    self._writeline("/dev/rtmotor_raw_r0","%d" % (self.__r_hz))
+	    self._writeline("/dev/rtmotor_raw_l0","%d" % (self.__l_hz))
+
+class StepMotorPosControl(StepMotor):
+	def __init__(self):
+		StepMotor.__init__(self)
+
+	def output(self,l_hz,r_hz,msec):
+		self._writeline("/dev/rtmotor0","%d %d %d" % (l_hz,r_hz,msec))
 
 	def forward(self,distance):
 		r_hz, l_hz = 400, 400
@@ -39,7 +65,6 @@ class StepMotorPair(Actuator):
 			r_hz, l_hz, tm = -r_hz, -l_hz, -tm
 
 		self.output(l_hz,r_hz,tm)
-
 
 class Leds(Actuator):
 	def __init__(self):

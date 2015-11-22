@@ -122,6 +122,8 @@ class AgentGoStraight(Agent):
         Agent.__init__(self)
         self.yaw = Yaw()
         self.motors = StepMotorRawControl()
+        self.hz = 0
+        self.diff = 0
 
     def setup(self):
         print >> sys.stderr, "setup"
@@ -132,10 +134,9 @@ class AgentGoStraight(Agent):
         v,t = self.yaw.get_value(),self.yaw.get_time()
         print v
 
-        d = 20*v / 9
-        self.motors.accel(d,-d)
+        self.diff = 20*v / 9
+        self.motors.output(self.hz + self.diff, self.hz - self.diff)
         time.sleep(1.0)
-        self.motors.accel(-d,d)
         
 if __name__ == '__main__':
     agent = AgentGoStraight()

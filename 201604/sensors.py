@@ -24,6 +24,9 @@ class Yaw(Sensor):
                 self.__init_value = float(self._readline(self.__files))
 		self.__value = self.__init_value
 
+	def adjust(self):
+                self.__init_value = float(self._readline(self.__files))
+
 	def update(self):
 		self.__value = float(self._readline(self.__files))
 		self.__time = time.time()
