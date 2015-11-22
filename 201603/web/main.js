@@ -4,7 +4,7 @@ function op(val){
 	httpReq.open("GET",url,false);
 	httpReq.send(null);
 
-	if(val == "photo"){
+	if(val == "photo" || val == "face"){
 		document.getElementById("img").innerHTML =
 		'<img src="/image.jpg?' + Math.random() + '" />';
 	}

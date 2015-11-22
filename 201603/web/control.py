@@ -28,7 +28,7 @@ try:
 except:
 	print "FILE ERROR"
 
-if form["op"].value == "photo":
+if form["op"].value == "photo" or form["op"].value == "face":
 	while not os.path.exists(img_file):
 		pass
 

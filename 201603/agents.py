@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # vim:fileencoding=utf-8
+
 import sys, time, threading
 from sensors import Buttons
 from actuators import StepMotorPair, Leds, Buzzer
@@ -106,7 +107,13 @@ class AgentFileListener(Agent):
 		elif op == "fw":	self.motors.forward(30)
 		elif op == "photo":
 			self.camera.capture(self.imagefile)
+		elif op == "face":
+                        h = None
+                        while h == None:
+			    h,v = self.camera.face_pos_on_img()
 
+			print h
+		
 if __name__ == '__main__':
 	agent = AgentFileListener()
 	agent.do_action()

@@ -51,7 +51,7 @@ class Buttons(Sensor):
 	def get_values(self):	return self.__values
 	def get_pushed(self):	return self.__pushed
 
-import picamera,os
+import picamera,os,cv2,shutil
 class PiCamera(Sensor):
 	def __init__(self):
 		Sensor.__init__(self)
@@ -59,9 +59,30 @@ class PiCamera(Sensor):
 		self.camera.hflip = True
 		self.camera.vflip = True
 
-	def capture(self,filename):
+	def capture(self,filename,resolution=(2592,1944)):
+                self.camera.resolution = resolution
 		self.camera.capture(filename + "_tmp.jpg")
 		os.rename(filename + "_tmp.jpg",filename)
+
+	def face_pos_on_img(self):
+                #カメラの操作
+		f = "/run/shm/face_pos_on_img.jpg"
+                width,height = 800,600
+		self.capture(f,(width,height))
+
+                #OpenCVを使った顔認識
+                img = cv2.imread(f)
+                gimg = cv2.cvtColor(img,cv2.cv.CV_BGR2GRAY)
+                classifier = "/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml"
+                cascade = cv2.CascadeClassifier(classifier)
+                face = cascade.detectMultiScale(gimg,1.1,1,cv2.CASCADE_FIND_BIGGEST_OBJECT)
+
+                #出力
+                if len(face) == 0: return None, None
+                r = face[0]
+                cv2.rectangle(img,tuple(r[0:2]),tuple(r[0:2]+r[2:4]),(0,255,255),4)
+                cv2.imwrite("/var/www/image.jpg",img)
+                return r[0] + r[2]/2 - width/2, r[1] + r[3]/2 - height/2
 
 if __name__ == '__main__':
 	pass
