@@ -248,9 +248,39 @@ class AgentGoAlongWall(Agent):
 
         self.motors.set_values(self.hz + diff, self.hz - diff)
         time.sleep(0.02)
+
+class AgentStopInFrontOfWall(Agent):
+    def __init__(self):
+        Agent.__init__(self)
+        self.motors = StepMotorRawControl()
+        self.hz = 0
+
+    def setup(self):
+        print >> sys.stderr, "setup"
+
+    def ready(self):
+        print >> sys.stderr, "ready"
+        self.hz = 0
+
+    def loop(self):
+        self.hz += 20
+        if self.hz > 2500:
+            self.hz = 2500
+
+        self.lightsensors.update()
+        values = self.lightsensors.get_values()
+        th = sum(values)
+
+        if th > 100:
+            self.hz = 0
+            self.motors.set_values(0,0)
+            return
+
+        self.motors.set_values(self.hz, self.hz)
+        time.sleep(0.02)
         
 if __name__ == '__main__':
-    agent = AgentGoAlongWall()
+    agent = AgentStopInFrontOfWall()
     agent.do_action()
     
     
