@@ -33,6 +33,8 @@ class Yaw(Sensor):
 	def __init__(self):
 		Sensor.__init__(self)
                 self.__value = 0.0
+                self.__prev_value = 0.0
+                self.__velocity = 0.0
                 self.__init_value = 0.0
                 self.__time = 0.0
 
@@ -48,9 +50,20 @@ class Yaw(Sensor):
 		    self.__init_value = float(self._readline(f))
                     time.sleep(0.3)
 		    self.__init_value = float(self._readline(f))
+		    self.__prev_value = self.__init_value
+		    self.__velocity = 0.0
+
+                    freq = 0.03
                     while self.__run:
-                        time.sleep(0.03)
+                        time.sleep(freq)
+		        self.__prev_value = self.__value
 		        self.__value = float(self._readline(f))
+
+		        d = self.__value - self.__prev_value
+                        if d > 180.0:    d -= 360.0
+                        elif d < -180.0: d += 360.0
+                        self.__velocity = d/freq
+
 		        self.__time = time.time()
 
 	def get_value(self):
@@ -58,6 +71,9 @@ class Yaw(Sensor):
             if v > 180.0:   v -= 360.0
             elif v < -180.0:    v += 360.0
             return v
+
+	def get_velocity(self):
+            return self.__velocity
 
 	def get_time(self): return self.__time
 			

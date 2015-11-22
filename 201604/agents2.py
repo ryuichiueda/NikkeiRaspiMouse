@@ -137,6 +137,10 @@ class AgentGoStraight(Agent):
         direction = self.yaw.get_value()
         print direction
 
+        #example of how to get the angular velocity
+        #vel = self.yaw.get_velocity()
+        #print direction, vel
+
         p_gain = 10.0
         diff = 20*direction / 9 * p_gain
         self.motors.set_values(diff, - diff)
