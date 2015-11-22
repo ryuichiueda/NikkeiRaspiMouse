@@ -136,22 +136,11 @@ class AgentGoStraight(Agent):
         self.hz = 0
 
     def loop(self):
-        direction = self.yaw.get_value()
-        #print direction
-
-        if abs(direction) > 5.0:
-            self.hz = 0
-
         self.hz += 10
         if self.hz > 3500:
             self.hz = 3500
 
-        p_gain = 10.0
-        diff = 20*direction / 9 * p_gain
-        if diff > 400.0:    diff = 400.0
-        elif diff < -400.0: diff = -400.0
-
-        self.motors.set_values(self.hz + diff, self.hz - diff)
+        self.motors.set_values(self.hz, self.hz)
 
         time.sleep(0.02)
         
