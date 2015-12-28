@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Raspberry Pi Mouseカメラ</title>
+    <script src="main.js"></script>
+    <link rel="stylesheet" href="default.css" />
+</head>
+<body>
+    <table style="text-align:center">
+        <tr>
+            <td></td>
+            <td><button type="button" onclick="op('fw')">↑</button></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><button type="button" onclick="op('left')">←</button></td>
+            <td><button type="button" onclick="op('photo')">撮影</button></td>
+            <td><button type="button" onclick="op('right')">→</button></td>
+        </tr>
+    </table>
+    <div id="img">
+    </div>
+</body>
+</html>
