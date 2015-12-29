@@ -51,7 +51,7 @@ class Buttons(Sensor):
 	def get_values(self):	return self.__values
 	def get_pushed(self):	return self.__pushed
 
-import picamera,os,cv2,shutil
+import picamera,os,cv2
 class PiCamera(Sensor):
 	def __init__(self):
 		Sensor.__init__(self)
@@ -80,6 +80,7 @@ class PiCamera(Sensor):
                 #出力
                 if len(face) == 0: return None, None
                 r = face[0]
+		###デバッグ用: 顔認識結果をブラウザに写す###
                 #cv2.rectangle(img,tuple(r[0:2]),tuple(r[0:2]+r[2:4]),(0,255,255),4)
                 #cv2.imwrite("/var/www/image.jpg",img)
                 return r[0] + r[2]/2 - width/2, r[1] + r[3]/2 - height/2

@@ -112,10 +112,10 @@ class AgentFileListener(Agent):
                         while h == None:
 			    h,v = self.camera.face_pos_on_img()
 
-                #画角が54度: 800/54 = 14.81ピクセルで1度
-                self.motors.turn(-h/14.81)
-                time.sleep(0.5)
-		self.camera.capture(self.imagefile)
+        	        #画角が54度: 800/54 = 14.81ピクセルで1度
+               	        self.motors.turn(-h/14.81)
+                        time.sleep(0.5)
+		        self.camera.capture(self.imagefile)
 		
 if __name__ == '__main__':
 	agent = AgentFileListener()
