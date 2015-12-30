@@ -67,15 +67,15 @@ class PiCamera(Sensor):
 		os.rename(filename + "_tmp.jpg",filename)
 
 	def face_pos_on_img(self):
-                #カメラの操作
-                width,height = 600,400
+                #画像の取得
                 stream = io.BytesIO()
+                width,height = 600,400
+                self.camera.resolution = (width,height)
                 self.camera.capture(stream,format='jpeg')
                 data = np.fromstring(stream.getvalue(), dtype=np.uint8)
                 img = cv2.imdecode(data,1)
 
                 #OpenCVを使った顔認識
-                #img = cv2.imread(f)
                 gimg = cv2.cvtColor(img,cv2.cv.CV_BGR2GRAY)
                 classifier = "/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml"
                 cascade = cv2.CascadeClassifier(classifier)
