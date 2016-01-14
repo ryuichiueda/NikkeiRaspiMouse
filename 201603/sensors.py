@@ -2,6 +2,9 @@
 # vim:fileencoding=utf-8
 import time, fcntl, glob, sys, threading
 
+# 参考: http://blog.livedoor.jp/tmako123-programming/archives/41536599.html
+#       http://qiita.com/wwacky/items/98d8be2844fa1b778323
+
 class Sensor:
 	def __init__(self):
 		pass
@@ -51,7 +54,6 @@ class Buttons(Sensor):
 	def get_values(self):	return self.__values
 	def get_pushed(self):	return self.__pushed
 
-# 参考: http://blog.livedoor.jp/tmako123-programming/archives/41536599.html
 import picamera,os,cv2,io
 import numpy as np
 class PiCamera(Sensor):
@@ -71,11 +73,11 @@ class PiCamera(Sensor):
                 stream = io.BytesIO()
                 width,height = 600,400
                 self.camera.resolution = (width,height)
-                self.camera.capture(stream,format='jpeg')
-                data = np.fromstring(stream.getvalue(), dtype=np.uint8)
+                self.camera.capture(stream,'jpeg')
+                data = np.fromstring(stream.getvalue(), np.uint8)
                 img = cv2.imdecode(data,1)
 
-                #OpenCVを使った顔認識
+                #OpenCVを使った顔検出
                 gimg = cv2.cvtColor(img,cv2.cv.CV_BGR2GRAY)
                 classifier = "/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml"
                 cascade = cv2.CascadeClassifier(classifier)
@@ -88,8 +90,8 @@ class PiCamera(Sensor):
                 cv2.imwrite("/var/www/tmp.image.jpg",img)
                 os.rename("/var/www/tmp.image.jpg","/var/www/image.jpg")
                 h = r[0] + r[2]/2 - width/2
-                #画角が54度: 800/54 = 14.81ピクセルで1度
-                return -h/14.81
+		#画角が53.5度なので、(幅のピクセル数/53.5)[pixel]が1度に相当
+		return -h/(width/53.5)  
 
 if __name__ == '__main__':
 	pass
