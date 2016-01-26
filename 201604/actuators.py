@@ -37,7 +37,7 @@ class StepMotorRawControl(StepMotor):
             elif freq < -th:    return -th
             else:               return freq
 
-	def output(self,l_hz,r_hz):
+	def set_values(self,l_hz,r_hz):
             self.__l_hz = self.threshold(l_hz)
             self.__r_hz = self.threshold(r_hz)
 	    self._writeline("/dev/rtmotor_raw_r0","%d" % (self.__r_hz))
@@ -47,7 +47,7 @@ class StepMotorPosControl(StepMotor):
 	def __init__(self):
 		StepMotor.__init__(self)
 
-	def output(self,l_hz,r_hz,msec):
+	def set_values(self,l_hz,r_hz,msec):
 		self._writeline("/dev/rtmotor0","%d %d %d" % (l_hz,r_hz,msec))
 
 	def forward(self,distance):
@@ -56,7 +56,7 @@ class StepMotorPosControl(StepMotor):
 		if tm < 0:
 			r_hz, l_hz, tm = -r_hz, -l_hz, -tm
 
-		self.output(l_hz,r_hz,tm)
+		self.set_values(l_hz,r_hz,tm)
 
 	def turn(self,deg):
 		l_hz, r_hz = -400, 400
@@ -64,7 +64,7 @@ class StepMotorPosControl(StepMotor):
 		if tm < 0:
 			r_hz, l_hz, tm = -r_hz, -l_hz, -tm
 
-		self.output(l_hz,r_hz,tm)
+		self.set_values(l_hz,r_hz,tm)
 
 class Leds(Actuator):
 	def __init__(self):

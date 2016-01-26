@@ -151,7 +151,7 @@ class AgentGoStraight(Agent):
         if diff > 400.0:    diff = 400.0
         elif diff < -400.0: diff = -400.0
 
-        self.motors.output(self.hz + diff, self.hz - diff)
+        self.motors.set_values(self.hz + diff, self.hz - diff)
 
         time.sleep(0.02)
         

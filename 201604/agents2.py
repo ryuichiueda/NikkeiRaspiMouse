@@ -140,7 +140,7 @@ class AgentGoStraight(Agent):
 
         p_gain = 10.0
         diff = 20*direction / 9 * p_gain
-        self.motors.output(diff, - diff)
+        self.motors.set_values(diff, - diff)
 
         time.sleep(0.1)
         
