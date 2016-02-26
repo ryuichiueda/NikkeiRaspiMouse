@@ -2,7 +2,7 @@
 
 fin () {
 	killall julius
-	exit 1
+	exit 0
 }
 
 trap fin 1 2 3 15
