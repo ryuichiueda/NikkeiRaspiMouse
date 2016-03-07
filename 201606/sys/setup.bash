@@ -27,3 +27,6 @@ sudo apt-get install python-rosinstall
 sudo apt-get install make
 
 sudo apt-get install linux-headers-$(uname -r)
+
+sudo apt-get install language-pack-ja
+sudo update-locale LANG=ja_JP.UTF-8
