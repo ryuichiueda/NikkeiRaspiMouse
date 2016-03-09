@@ -36,3 +36,4 @@ if __name__ == '__main__':
         if '前' in line: put_op('fw')
         if '左' in line: put_op('left')
         if '右' in line: put_op('right')
+        print line

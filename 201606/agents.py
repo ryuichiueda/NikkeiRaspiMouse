@@ -280,7 +280,7 @@ class AgentStopInFrontOfWall(Agent):
         time.sleep(0.02)
         
 if __name__ == '__main__':
-    agent = AgentStopInFrontOfWall()
+    agent = AgentFileListener()
     agent.do_action()
     
     
