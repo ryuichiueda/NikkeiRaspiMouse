@@ -4,5 +4,5 @@ install:
 	update-rc.d robot.sh defaults
 
 uninstall:
-	rm /etc/init.d/robot.sh
 	update-rc.d robot.sh remove
+	rm /etc/init.d/robot.sh
